@@ -4,7 +4,8 @@ from db_manip.raw_data.insert_data import (
     buildings,
     organizations
 )
-from sqlalchemy import insert
+from sqlalchemy.dialects.postgresql import insert
+# from sqlalchemy import insert
 from models.models import (
     PhoneNumberBase,
     BuildingBase,
@@ -22,7 +23,7 @@ async def database_init():
             .values(
                 phone_numbers
             )
-        )
+        ).on_conflict_do_nothing(index_elements=['id'])
         stmt1 = (
             insert(
                 BuildingBase
@@ -30,7 +31,7 @@ async def database_init():
             .values(
                 buildings
             )
-        )
+        ).on_conflict_do_nothing(index_elements=['id'])
         stmt2 = (
             insert(
                 OrganizationBase
@@ -38,7 +39,7 @@ async def database_init():
             .values(
                 organizations
             )
-        )
+        ).on_conflict_do_nothing(index_elements=['id'])
 
         await session.execute(stmt1)
         await session.commit()
